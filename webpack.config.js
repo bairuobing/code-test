@@ -1,12 +1,18 @@
 const path = require('path');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 module.exports = {
-    entry:  './src/index.js', // 入口文件
+    entry:  {
+        bundle: './src/index.js',
+    }, // 入口文件
     output: {
         path: path.resolve(__dirname, 'build'), // 必须使用绝对地址，输出文件夹
-        filename: "bundle.js", // 打包后输出文件的文件名
-        publicPath: '../build/' // 知道如何寻找资源
+        filename: "[name].js", // 打包后输出文件的文件名
+        publicPath: '../build/', // 知道如何寻找资源
+        // library: '[name]_[chunkhash]',
+    },
+    externals: {
+        'react' : 'React',
+        'react-dom': 'ReactDOM'
     },
     module: {
         rules: [
@@ -17,27 +23,28 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: ['style-loader', // 开发环境
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            modules: true
+                use: ExtractTextPlugin.extract({
+                    fallback: "style-loader",
+                    use: [
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                modules: true
+                            }
                         }
-                    }
-                ],
+                    ]
+                }),
             },
             // {
             //     test: /\.css$/,
-            //     use: [
-            //         'style-loader',
-            //         MiniCssExtractPlugin.loader, // 生产环境
+            //     use: ['style-loader', // 开发环境
             //         {
             //             loader: 'css-loader',
             //             options: {
             //                 modules: true
             //             }
             //         }
-            //     ]
+            //     ],
             // },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -57,10 +64,7 @@ module.exports = {
             }
         ]
     },
-    // plugins: [
-    // // 输出的文件路径
-    //     new MiniCssExtractPlugin({
-    //         filename: "css/[name].[hash].css",
-    //     })
-    // ]
+    plugins: [
+        new ExtractTextPlugin("css/[name].[hash].css"),
+    ]
 }
