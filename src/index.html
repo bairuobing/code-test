@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebPack</title>
+    <title>Test</title>
     <style>
        #box {
             width: 200px;
@@ -27,11 +27,22 @@
     
 </head>
 <body>
-    <div id="root">
-        
-    </div>
+    <div id="root"></div>
+    <from action="post" id="form">
+        <input type="text" size="40" maxlength="50" required>
+        <select name="" id="">
+            <option value="1">1</option>
+            <option value="2">2</option>
+
+        </select>
+        <span type="text" id="editor">ABCDE</span>
+        <button type="submit">SUB</button>
+        <button type="reset">RST</button>
+    </from>
     <div id="box">
-        <div id="inside-box"></div>
+        <div id="inside-box">
+            <a href="./page1.html">page1</a>
+        </div>
     </div>
     <div id="box2"></div>
     <script src="https://cdn.bootcss.com/react/16.13.1/umd/react.production.min.js"></script>
@@ -54,7 +65,38 @@
             removeHandler: (element, type, handler) => {
                 element.removeEventListener(type, handler);
             },
-        }
+        };
+        (function(){
+            var showCount = 0;
+            EventUtil.addHandler(window, "load", function () {
+                console.log("LOAD!")
+            })
+
+            EventUtil.addHandler(window, "pageshow", function (e) {
+                showCount++;
+                console.log('Show  ' + showCount + '!!')
+            });
+
+            EventUtil.addHandler(window, "pagehide", function (e) {
+                console.log('Hide' + e.persisted + '!!')
+            });
+
+            EventUtil.addHandler(window, "hashchange", function (e) {
+                console.log('OldURl: ' + e.oldURL + '\n NewURL: ' + e.newURL);
+            })
+        })();
+
+        const editor = document.getElementById('editor');
+        editor.addEventListener("copy", function (e){
+            let selectionText = window.getSelection().toString();
+            selectionText += '(白若冰 copy)';
+            e.clipboardData.setData('text/plain', selectionText);
+            e.preventDefault();
+        });
+        editor.addEventListener("paste", function (e){
+            e.clipboardData.setData('text/plain','Hello')
+            console.log(e.clipboardData.getData("text/plain"));
+        });
     </script>
     <script src="../build/bundle.js"></script>
 </body>
